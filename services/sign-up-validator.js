@@ -6,6 +6,7 @@ function validateSignUpBody() {
     // username must be an email
     body('email')
       .isEmail()
+      .withMessage('Enter a valid email')
       .normalizeEmail()
       .custom((value) => {
         return User.findOne({ email: value }).then((user) => {
@@ -15,8 +16,6 @@ function validateSignUpBody() {
         });
       }),
     body('username')
-      .not()
-      .isEmpty()
       .trim()
       .isLength({ min: 1 })
       .withMessage('Username must not be empty')
@@ -31,11 +30,8 @@ function validateSignUpBody() {
     // password must be at least 5 chars long
     body('password')
       .isLength({ min: 5 })
-      .withMessage('Password is too short')
-      .isAlphanumeric(),
+    .withMessage('Password is too short'),
     body('confirmPassword')
-      .isLength({ min: 5 })
-      .isAlphanumeric()
       .custom((value, { req }) => {
         if (value !== req.body.password) {
           throw new Error('Passwords do not match');
